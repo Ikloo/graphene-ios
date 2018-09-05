@@ -8,17 +8,25 @@
 
 #import "AssetAmount.h"
 #import "NSMutableData+ProtoBuff.h"
+#import "ChainConfig.h"
 
 @implementation AssetAmount
 
--(instancetype)initWithAsset:(NSString*)asset_id amount:(int64_t)amount{
+- (instancetype)initWithAsset:(NSString*)asset_id amount:(int64_t)amount {
     self=[self init];
     self.asset_id=asset_id;
     self.amount=amount;
     return self;
 }
 
--(NSData *)serialize{
+- (instancetype)initWithAmount:(int64_t)amount {
+    self = [self init];
+    self.asset_id = DEFAULT_ASSET_ID;
+    self.amount = amount;
+    return self;
+}
+
+- (NSData *)serialize {
     NSMutableData* result = [NSMutableData data];
     [result appendBytes:&_amount length:sizeof(_amount)];
     NSArray* protocol_ids= [self.asset_id componentsSeparatedByString:@"."];
@@ -32,7 +40,7 @@
     return result;
 }
 
--(NSDictionary *)dictionaryValue{
+- (NSDictionary *)dictionaryValue {
     return @{
              @"asset_id":_asset_id,
              @"amount":@(_amount)

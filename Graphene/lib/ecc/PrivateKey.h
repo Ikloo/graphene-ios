@@ -23,9 +23,12 @@
 @property (nonatomic,assign) EC_KEY* _key;
 @property (nonatomic,strong) NSData* privateKeyData;
 
-+(instancetype)fromWif:(NSString*)wifKey;
--(NSString*)toWif;
--(PublicKey*)getPublic;
--(NSData*)sharedSecret:(PublicKey*)publicKey;
--(NSData*)sign:(NSData*)data;
++ (instancetype)fromWif:(NSString*)wifKey;
++ (instancetype)fromData:(NSData *)data;
++ (instancetype)fromSeed:(NSData *)seed;
+
+- (NSString*)toWif;
+- (PublicKey*)getPublic;
+- (NSData*)sharedSecret:(PublicKey*)publicKey;
+- (NSData*)sign:(NSData*)data;
 @end

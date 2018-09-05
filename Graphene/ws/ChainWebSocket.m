@@ -14,7 +14,8 @@
 }
 @property (nonatomic,strong) SRWebSocket* socket;
 @property (nonatomic,assign) BOOL connected;
-@property (nonatomic,readwrite,copy) void(^connctCallback)(BOOL connected,NSString* status);
+@property (nonatomic,readwrite,copy) void(^connctCallback)(BOOL connected, NSString* status);
+@property (atomic,strong) NSMutableDictionary* methodCallbackMaps;
 @property (atomic,strong) NSMutableDictionary* callbackMaps;
 @property (atomic,strong) NSMutableDictionary* broadcastCallbackMaps;
 @property (nonatomic,strong) NSTimer* timeoutTimer;
@@ -25,10 +26,11 @@
 -(instancetype)initWithAddress:(NSString*)address{
     self=[self init];
     cbId=0;
-    self.callbackMaps=[NSMutableDictionary dictionary];
-    self.broadcastCallbackMaps=[NSMutableDictionary dictionary];
-    self.socket=[[SRWebSocket alloc] initWithURL:[NSURL URLWithString:address]];
-    self.socket.delegate=self;
+    self.callbackMaps = [NSMutableDictionary dictionary];
+    self.methodCallbackMaps = [NSMutableDictionary dictionary];
+    self.broadcastCallbackMaps = [NSMutableDictionary dictionary];
+    self.socket = [[SRWebSocket alloc] initWithURL: [NSURL URLWithString:address]];
+    self.socket.delegate = self;
     [self.socket open];
     return self;
 }
@@ -63,6 +65,7 @@
         NSString* _cbId = [NSString stringWithFormat:@"%u",++cbId];
         [self.callbackMaps setObject:callback forKey:_cbId];
         NSString* method = params[1];
+        [self.methodCallbackMaps setObject:method forKey:_cbId];
         if([method isEqualToString:@"broadcast_transaction_with_callback"]){
             id bradcast_callback = params[2][0];
             [self.broadcastCallbackMaps setObject:bradcast_callback forKey:_cbId];
@@ -77,7 +80,7 @@
                                                            options:0
                                                              error:&error];
         if (!jsonData) {
-            NSLog(@"Got an error: %@", error);
+            NSLog(@"[GRAPHENE] Got an error: %@", error);
             callback(error,nil);
         }
         else{
@@ -103,27 +106,37 @@
 
 #pragma mark - websocket delegate methods
 - (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message{
-    NSLog(@"\n>>%@\n",message);
     NSError* error;
     NSDictionary *string2dic = [NSJSONSerialization JSONObjectWithData: [message dataUsingEncoding:NSUTF8StringEncoding]
                                                                options: NSJSONReadingMutableContainers
                                                                  error: &error];
-    if([string2dic objectForKey:@"id"]){
-        NSString* _cbId = [[string2dic objectForKey:@"id"] stringValue];
-        void(^cb)(NSError*,id result) = [self.callbackMaps objectForKey:_cbId];
-        if(cb){
-            cb(nil,string2dic[@"result"]);
+
+    NSString *method = @"";
+
+    if ([string2dic objectForKey:@"id"]) {
+        NSString *_cbId = [[string2dic objectForKey:@"id"] stringValue];
+        method = [self.methodCallbackMaps objectForKey:_cbId];
+
+        void(^cb)(NSError *, id result) = [self.callbackMaps objectForKey:_cbId];
+        if (cb) {
+            cb(nil, string2dic[@"result"]);
             [self.callbackMaps removeObjectForKey:_cbId];
+            [self.methodCallbackMaps removeObjectForKey:_cbId];
         }
     }
     else if([[string2dic objectForKey:@"method"] isEqualToString:@"notice"]){
         NSString* _cbId = [string2dic[@"params"][0] stringValue];
+        method = [self.methodCallbackMaps objectForKey:_cbId];
+
         void(^cb)(NSError*,id result) = [self.broadcastCallbackMaps objectForKey:_cbId];
         if(cb){
             cb(nil,string2dic[@"params"][1]);
             [self.broadcastCallbackMaps removeObjectForKey:_cbId];
+            [self.methodCallbackMaps removeObjectForKey:_cbId];
         }
     }
+
+    NSLog(@"[GRAPHENE] 🔵 SocketMessage at method - %@: %@", method, string2dic);
 }
 
 - (void)webSocketDidOpen:(SRWebSocket *)webSocket{
@@ -138,7 +151,7 @@
     self.connected=NO;
     [self.timeoutTimer invalidate];
     [webSocket close];
-    NSLog(@"socket connect failed:%@",error.localizedDescription);
+    NSLog(@"[GRAPHENE] Socket connect failed: %@",error.localizedDescription);
     if(self.connctCallback && !self.connectTimeout){
         self.connctCallback(NO,@"error");
     }
@@ -147,7 +160,7 @@
 - (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean{
     self.connected=NO;
     [self.timeoutTimer invalidate];
-    NSLog(@"socket connect lost:%@,%ld,%d",reason,(long)code,wasClean);
+    NSLog(@"[GRAPHENE] Socket connect lost: %@, %ld, %d", reason, (long)code, wasClean);
     if(self.connctCallback && !self.connectTimeout){
         self.connctCallback(NO,@"closed");
     }
@@ -155,7 +168,7 @@
 
 - (void)webSocket:(SRWebSocket *)webSocket didReceivePong:(NSData *)pongPayload{
     [self.timeoutTimer invalidate];
-    NSLog(@"pong:%@",[[NSString alloc] initWithData:pongPayload encoding:NSUTF8StringEncoding]);
+    NSLog(@"[GRAPHENE] Pong: %@",[[NSString alloc] initWithData:pongPayload encoding:NSUTF8StringEncoding]);
 }
 @end
 

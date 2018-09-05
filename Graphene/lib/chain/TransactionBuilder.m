@@ -135,6 +135,10 @@
         if(err){
             NSLog(@"%@",err.description);
         }
+        if ([resp isKindOfClass:[NSArray class]]) {
+            callback(err, (NSArray *)resp[0]);
+            return;
+        }
         callback(err,resp);
     },[self signedTransaction]] callback:^(NSError *err, id resp) {
         NSLog(@"boradcasted:%@",resp);

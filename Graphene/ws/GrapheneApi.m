@@ -29,7 +29,7 @@
             callback(nil,self.api_id);
         }
         else{
-            NSLog(@"%@ Api initialize failed:%@",self.api_name,error);
+            NSLog(@"[GRAPHENE] %@ Api initialize failed: %@",self.api_name,error);
             callback(error,response);
         }
     }];
@@ -37,14 +37,14 @@
 
 -(void)exec:(NSString*)method params:(NSArray*)params callback:(void(^)(NSError* err,id resp))callback{
     if(!self.api_id){
-        NSLog(@"%@",@[self.api_id,method,params]);
-        NSLog(@"%@ Api is not initialized",self.api_name);
+        NSLog(@"[GRAPHENE] %@", @[self.api_id,method,params]);
+        NSLog(@"[GRAPHENE] %@ Api is not initialized", self.api_name);
         callback([NSError errorWithDomain:self.api_name code:-1 userInfo:nil],nil);
     }
     else{
-        [self.ws_rpc call:@[self.api_id,method,params] callback:^(NSError *error, id response) {
-            if(error){
-                NSLog(@"%@:\n%@",@[self.api_id,method,params],error);
+        [self.ws_rpc call: @[self.api_id, method, params] callback:^(NSError *error, id response) {
+            if (error) {
+                NSLog(@"[GRAPHENE] Call Error %@: \n %@", @[self.api_id, method, params], error);
             }
             callback(error,response);
         }];

@@ -32,7 +32,7 @@
             [self.Api close];
         }
         else if(!connected&&[status isEqualToString:@"closed"]){ // closed
-            NSLog(@"Connection closed: %@",url);
+            NSLog(@"[GRAPHENE] Connection closed: %@",url);
             callback(NO);
         }
         else if(connected&&[status isEqualToString:@"ready"]){ // connected and initialized
@@ -96,10 +96,10 @@
         [arr sortUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
             return [obj1[1] doubleValue]>[obj2[1] doubleValue];
         }];
-        NSLog(@"%@",arr);
+        NSLog(@"[GRAPHENE] %@", arr);
         [self tryConnect:arr index:0 callback:^(BOOL connected,NSString* url) {
             if(!connected){
-                NSLog(@"Tried %lu connections, none of which worked,%@",(unsigned long)[arr count],arr);
+                NSLog(@"[GRAPHENE] Tried %lu connections, none of which worked, %@", (unsigned long)[arr count], arr);
             }
             callback(connected,url);
         }];

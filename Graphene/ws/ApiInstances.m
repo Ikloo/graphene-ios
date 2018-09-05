@@ -34,7 +34,7 @@
         if(connected&&[status isEqualToString:@"open"]){
             [self.ws_rpc login:@"" password:@"" callback:^(NSError *error, id response) {
                 if(!error){
-                    NSLog(@"Conncted to API node:%@",url);
+                    NSLog(@"[GRAPHENE] Conncted to API node: %@",url);
                     self.initCount=0;
                     self._db=[[GrapheneApi alloc] initWithName:@"database" websocket:self.ws_rpc];
                     self._net=[[GrapheneApi alloc] initWithName:@"network_broadcast" websocket:self.ws_rpc];
@@ -86,7 +86,7 @@
                         }
                     }];
                 } else{
-                    NSLog(@"Login to %@ failed:%@",url,error.localizedDescription);
+                    NSLog(@"[GRAPHENE] Login to %@ failed: %@",url,error.localizedDescription);
                 }
             }];
         }

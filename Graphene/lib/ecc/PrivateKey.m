@@ -23,7 +23,24 @@ static int ECDSA_SIG_recover_key_GFp(EC_KEY *eckey, ECDSA_SIG *ecsig, const unsi
     NSMutableData* privKeyData = BTCDataFromBase58Check(wifKey);
     NSAssert(privKeyData!=nil, @"Invalid private key, checksum does not match");
     instance.privateKeyData=[privKeyData subdataWithRange:NSMakeRange(1, [privKeyData length]-1)];
-    EC_KEY* _key =EC_KEY_new_by_curve_name(NID_secp256k1);
+    return [PrivateKey finalInatialization:instance];
+}
+
++ (instancetype)fromData:(NSData *)data {
+    PrivateKey* instance = [[PrivateKey alloc] init];
+    instance.privateKeyData = [data subdataWithRange:NSMakeRange(1, [data length]-1)];
+    return [PrivateKey finalInatialization:instance];
+}
+
++ (instancetype)fromSeed:(NSData *)seed {
+    NSData* hashedSeedData = BTCSHA256(seed);
+    PrivateKey* instance = [[PrivateKey alloc] init];
+    instance.privateKeyData = hashedSeedData.copy;
+    return [PrivateKey finalInatialization:instance];
+}
+
++ (instancetype)finalInatialization:(PrivateKey *)instance {
+    EC_KEY* _key = EC_KEY_new_by_curve_name(NID_secp256k1);
     BIGNUM *bignum = BN_bin2bn(instance.privateKeyData.bytes, (int)instance.privateKeyData.length, BN_new());
     BTCRegenerateKey(_key, bignum);
     instance._key=_key;
