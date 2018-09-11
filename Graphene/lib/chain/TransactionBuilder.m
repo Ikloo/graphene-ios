@@ -141,7 +141,11 @@
         }
         callback(err,resp);
     }, [self signedTransaction]] callback:^(NSError *err, id resp) {
-        callback(err,resp);
+        if (err != nil) {
+            callback(err, resp);
+        } else {
+            callback(nil, resp);
+        }
     }];
 }
 
