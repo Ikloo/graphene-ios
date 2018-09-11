@@ -140,8 +140,8 @@
             return;
         }
         callback(err,resp);
-    },[self signedTransaction]] callback:^(NSError *err, id resp) {
-        NSLog(@"boradcasted:%@",resp);
+    }, [self signedTransaction]] callback:^(NSError *err, id resp) {
+        callback(err,resp);
     }];
 }
 

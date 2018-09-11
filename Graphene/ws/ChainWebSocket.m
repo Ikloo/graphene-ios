@@ -59,9 +59,8 @@
 
 -(void)call:(NSArray*)params callback:(void (^)(NSError * error, id response))callback{
     if(!self.connected){
-        callback([NSError errorWithDomain:@"GrapheneWS" code:-1 userInfo:nil],nil);
-    }
-    else{
+        callback([NSError errorWithDomain:@"Not connected" code:-1 userInfo:nil], nil);
+    } else {
         NSString* _cbId = [NSString stringWithFormat:@"%u",++cbId];
         [self.callbackMaps setObject:callback forKey:_cbId];
         NSString* method = params[1];
@@ -95,7 +94,7 @@
             callback(error,response);
         }];
     } else{
-        callback([NSError errorWithDomain:@"GrapheneWS" code:-1 userInfo:nil],nil);
+        callback([NSError errorWithDomain:@"Not connected" code:-1 userInfo:nil], nil);
     }
 }
 
@@ -119,6 +118,14 @@
 
         void(^cb)(NSError *, id result) = [self.callbackMaps objectForKey:_cbId];
         if (cb) {
+            if ([string2dic.allKeys containsObject:@"error"]) {
+                NSString *message = [string2dic valueForKeyPath:@"error.message"];
+                NSInteger code = [string2dic valueForKeyPath:@"error.data.code"];
+
+                cb([NSError errorWithDomain:message code:code userInfo:nil], nil);
+                return;
+            }
+
             cb(nil, string2dic[@"result"]);
             [self.callbackMaps removeObjectForKey:_cbId];
             [self.methodCallbackMaps removeObjectForKey:_cbId];

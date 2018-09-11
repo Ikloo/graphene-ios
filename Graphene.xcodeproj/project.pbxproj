@@ -392,8 +392,6 @@
 				1D08BD1A2047E25200328C0F /* Sources */,
 				1D08BD1B2047E25200328C0F /* Frameworks */,
 				1D08BD1C2047E25200328C0F /* Resources */,
-				35D78C61F705726D5401C753 /* [CP] Embed Pods Frameworks */,
-				FD625DCE6E696F912B315FFE /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -414,7 +412,6 @@
 				1D33F7E7202B5694005806F2 /* Frameworks */,
 				1D33F7E8202B5694005806F2 /* Headers */,
 				1D33F7E9202B5694005806F2 /* Resources */,
-				C16FD502E4B745F8F64EE09E /* [CP] Copy Pods Resources */,
 				1D29EC1B206292F3001B6281 /* ShellScript */,
 			);
 			buildRules = (
@@ -512,36 +509,6 @@
 			shellPath = /bin/sh;
 			shellScript = "";
 		};
-		35D78C61F705726D5401C753 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-GrapheneTests/Pods-GrapheneTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C16FD502E4B745F8F64EE09E /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Graphene/Pods-Graphene-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		EC4A678D3C1E65271E47C1D1 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -558,21 +525,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		FD625DCE6E696F912B315FFE /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-GrapheneTests/Pods-GrapheneTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

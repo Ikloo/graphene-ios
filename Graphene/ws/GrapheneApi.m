@@ -44,7 +44,7 @@
     else{
         [self.ws_rpc call: @[self.api_id, method, params] callback:^(NSError *error, id response) {
             if (error) {
-                NSLog(@"[GRAPHENE] Call Error %@: \n %@", @[self.api_id, method, params], error);
+                NSLog(@"[GRAPHENE] Call Error %@: %@", @[self.api_id, method, params], error);
             }
             callback(error,response);
         }];
