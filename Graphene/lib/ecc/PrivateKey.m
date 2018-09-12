@@ -28,7 +28,7 @@ static int ECDSA_SIG_recover_key_GFp(EC_KEY *eckey, ECDSA_SIG *ecsig, const unsi
 
 + (instancetype)fromData:(NSData *)data {
     PrivateKey* instance = [[PrivateKey alloc] init];
-    instance.privateKeyData = [data subdataWithRange:NSMakeRange(1, [data length]-1)];
+    instance.privateKeyData = data;
     return [PrivateKey finalInatialization:instance];
 }
 
