@@ -24,6 +24,10 @@
     return instance;
 }
 
+- (BOOL)isConnected {
+    return self.ws_rpc.connected;
+}
+
 -(void)connect:(NSString*)url timeout:(NSTimeInterval)timeout statusCallback:(void(^)(BOOL connected,NSString* status))callback{
     if(self.ws_rpc){
         [self.ws_rpc close];

@@ -26,6 +26,10 @@
     return instance;
 }
 
+- (BOOL)isConnected {
+    return self.Api.isConnected;
+}
+
 -(void)connect:(NSString*)url callback:(void(^)(BOOL connected))callback{
     [self.Api connect:url timeout:4 statusCallback:^(BOOL connected, NSString *status) {
         if(!connected && ![status isEqualToString:@"closed"]){ //error, timeout, initFail

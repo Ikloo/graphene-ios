@@ -18,6 +18,8 @@
 @property (nonatomic,strong) GrapheneApi* _hist;
 @property (nonatomic,strong) GrapheneApi* _crypt;
 
+@property (nonatomic, assign) BOOL isConnected;
+
 +(instancetype)sharedInstance;
 -(void)connect:(NSString*)url timeout:(NSTimeInterval)timeout statusCallback:(void(^)(BOOL connected,NSString* status))callback;
 -(void)close;

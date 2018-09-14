@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 
 @interface ChainWebSocket : NSObject
+@property (nonatomic, assign) BOOL connected;
+
 -(instancetype)initWithAddress:(NSString*)address;
 -(void)connect:(void(^)(BOOL connected,NSString* status))callback timeout:(NSTimeInterval)timeout;
 -(void)call:(NSArray*)params callback:(void (^)(NSError * error, id response))callback;

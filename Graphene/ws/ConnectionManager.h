@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 
 @interface ConnectionManager : NSObject
-+(instancetype)sharedInstance;
--(void)connectWithFallback:(NSArray*)urls callback:(void(^)(BOOL connected,NSString* url))callback;
+@property (nonatomic, assign) BOOL isConnected;
+
++ (instancetype)sharedInstance;
+- (void)connectWithFallback:(NSArray*)urls callback:(void(^)(BOOL connected,NSString* url))callback;
 @end

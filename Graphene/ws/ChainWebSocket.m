@@ -13,7 +13,6 @@
     uint32_t cbId;
 }
 @property (nonatomic,strong) SRWebSocket* socket;
-@property (nonatomic,assign) BOOL connected;
 @property (nonatomic,readwrite,copy) void(^connctCallback)(BOOL connected, NSString* status);
 @property (atomic,strong) NSMutableDictionary* methodCallbackMaps;
 @property (atomic,strong) NSMutableDictionary* callbackMaps;
