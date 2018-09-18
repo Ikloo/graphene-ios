@@ -147,6 +147,25 @@
     }];
 }
 
+-(void)broadcastWithCompletion:(void(^)(NSError *err))completion andNotice:(void(^)(NSError *err, NSDictionary *tx))notice {
+    [[ApiInstances sharedInstance]._net exec:@"broadcast_transaction_with_callback" params:@[^(NSError *err, id resp) {
+        if (err) {
+            NSLog(@"%@",err.description);
+        }
+        if ([resp isKindOfClass:[NSArray class]]) {
+            notice(err, (NSArray *)resp[0]);
+            return;
+        }
+        notice(err,resp);
+    }, [self signedTransaction]] callback:^(NSError *err, id resp) {
+        if (err) {
+            completion(err);
+        } else {
+            completion(nil);
+        }
+    }];
+}
+
 -(void)processTransaction:(void(^)(NSError *err,NSDictionary* tx))callback broadcast:(BOOL)broadcast{
     if(_signer_private_keys==nil||_signer_private_keys.count==0){
         [[NSException exceptionWithName:@"Process transaction" reason:@"no signer key" userInfo:nil] raise];
@@ -167,6 +186,20 @@
     }];
 }
 
+- (void)processTransactionWithCompletion:(void(^)(NSError *err))completion andNotice:(void(^)(NSError *err, NSDictionary *tx))notice {
+    if(_signer_private_keys==nil||_signer_private_keys.count==0){
+        [[NSException exceptionWithName:@"Process transaction" reason:@"no signer key" userInfo:nil] raise];
+    }
+    __weak TransactionBuilder *weakSelf = self;
+    [self setRequiredFees:^(){
+        __strong TransactionBuilder *strongSelf = weakSelf;
+        __weak TransactionBuilder *weakSelf = strongSelf;
+        [strongSelf setBlockHeader:^(){
+            __strong TransactionBuilder *strongSelf = weakSelf;
+            [strongSelf broadcastWithCompletion:completion andNotice:notice];
+        }];
+    }];
+}
 
 -(NSDictionary*)signedTransaction{
     [self sign];

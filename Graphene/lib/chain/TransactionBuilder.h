@@ -23,6 +23,7 @@
 
 -(instancetype)initWithOperations:(NSArray<BaseOperation*>*)operations;
 -(void)processTransaction:(void(^)(NSError *err,NSDictionary* tx))callback broadcast:(BOOL)broadcast;
+- (void)processTransactionWithCompletion:(void(^)(NSError *err))completion andNotice:(void(^)(NSError *err, NSDictionary *tx))notice;
 -(void)add_signer:(PrivateKey*)private_key;
 -(NSDictionary*)signedTransaction;
 @end

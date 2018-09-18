@@ -57,22 +57,23 @@
 }
 
 -(void)call:(NSArray*)params callback:(void (^)(NSError * error, id response))callback{
-    if(!self.connected){
+    if (!self.connected) {
         callback([NSError errorWithDomain:@"Not connected" code:-1 userInfo:nil], nil);
     } else {
-        NSString* _cbId = [NSString stringWithFormat:@"%u",++cbId];
+        NSString* _cbId = [NSString stringWithFormat:@"%u", ++cbId];
         [self.callbackMaps setObject:callback forKey:_cbId];
         NSString* method = params[1];
         [self.methodCallbackMaps setObject:method forKey:_cbId];
-        if([method isEqualToString:@"broadcast_transaction_with_callback"]){
+
+        if ([method isEqualToString:@"broadcast_transaction_with_callback"]) {
             id bradcast_callback = params[2][0];
             [self.broadcastCallbackMaps setObject:bradcast_callback forKey:_cbId];
-            NSMutableArray* mutableParams= params.mutableCopy;
-            mutableParams[2]=@[_cbId,params[2][1]];
-            params=mutableParams;
+            NSMutableArray *mutableParams = params.mutableCopy;
+            mutableParams[2] = @[_cbId,params[2][1]];
+            params = mutableParams;
         }
         
-        NSDictionary* request=@{@"method":@"call",@"params":params,@"id":_cbId};
+        NSDictionary *request=@{@"method":@"call", @"params":params, @"id":_cbId};
         NSError *error;
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:request
                                                            options:0
@@ -80,8 +81,7 @@
         if (!jsonData) {
             NSLog(@"[GRAPHENE] Got an error: %@", error);
             callback(error,nil);
-        }
-        else{
+        } else {
             [self.socket send:jsonData];
         }
     }
@@ -115,28 +115,28 @@
         NSString *_cbId = [[string2dic objectForKey:@"id"] stringValue];
         method = [self.methodCallbackMaps objectForKey:_cbId];
 
-        void(^cb)(NSError *, id result) = [self.callbackMaps objectForKey:_cbId];
-        if (cb) {
+        void(^completion)(NSError *, id result) = [self.callbackMaps objectForKey:_cbId];
+        if (completion) {
             if ([string2dic.allKeys containsObject:@"error"]) {
                 NSString *message = [string2dic valueForKeyPath:@"error.message"];
                 NSInteger code = [string2dic valueForKeyPath:@"error.data.code"];
 
-                cb([NSError errorWithDomain:message code:code userInfo:nil], nil);
+                completion([NSError errorWithDomain:message code:code userInfo:nil], nil);
                 return;
             }
 
-            cb(nil, string2dic[@"result"]);
+            completion(nil, string2dic[@"result"]);
             [self.callbackMaps removeObjectForKey:_cbId];
             [self.methodCallbackMaps removeObjectForKey:_cbId];
         }
     }
-    else if([[string2dic objectForKey:@"method"] isEqualToString:@"notice"]){
+    if ([[string2dic objectForKey:@"method"] isEqualToString:@"notice"]) {
         NSString* _cbId = [string2dic[@"params"][0] stringValue];
         method = [self.methodCallbackMaps objectForKey:_cbId];
 
-        void(^cb)(NSError*,id result) = [self.broadcastCallbackMaps objectForKey:_cbId];
-        if(cb){
-            cb(nil,string2dic[@"params"][1]);
+        void(^notice)(NSError*,id result) = [self.broadcastCallbackMaps objectForKey:_cbId];
+        if (notice) {
+            notice(nil, string2dic[@"params"][1]);
             [self.broadcastCallbackMaps removeObjectForKey:_cbId];
             [self.methodCallbackMaps removeObjectForKey:_cbId];
         }
